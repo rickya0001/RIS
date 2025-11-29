@@ -137,6 +137,13 @@ body
 	width:95px;
 }
 
+#main-menu #navigation li.calendar
+{
+	background:url(../images/icoClock.png) no-repeat center;
+	height:53px;	
+	width:95px;
+}
+
 #main-menu #navigation li.reports
 {
 	background:url(../images/icoReports.png) no-repeat center;

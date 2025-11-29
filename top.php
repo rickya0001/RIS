@@ -33,9 +33,14 @@ header("Content-type: text/html;  charset=utf-8");
 
 
 	<link href="css/style.css" rel="stylesheet" type="text/css" />
-	<link href="css/home_style.css" rel="stylesheet" type="text/css" />    
-	<script type="text/javascript" src='Scripts/jquery-1.4.4.js'></script>
-    <script type="text/javascript" src="Scripts/jquery-ui-1.8.10.custom.min.js"></script>
+	<link href="css/home_style.css" rel="stylesheet" type="text/css" />
+	<!-- Bootstrap 5 CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/ui-lightness/jquery-ui.css" />
+	<!-- Bootstrap 5 JS Bundle -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="Scripts/PM.UIPage.Home.js"></script>     
 	<script type="text/javascript" src="Scripts/PM.UIPage.js"></script> 
     <script type="text/javascript" src="Scripts/jquery.jclock.js"></script>  
@@ -122,8 +127,10 @@ header("Content-type: text/html;  charset=utf-8");
                 <li class="search">
 
                 </li>
+                <li class="line">&nbsp;</li>     
+                <li class="calendar">
 
-
+                </li>
                 <li class="line">&nbsp;</li>     
                 <li class="help">
 
