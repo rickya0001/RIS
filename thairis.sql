@@ -2139,9 +2139,9 @@ CREATE TABLE `xray_user` (
 --
 
 INSERT INTO `xray_user` (`ID`, `CODE`, `DF_CODE`, `LOGIN`, `NAME`, `LASTNAME`, `NAME_ENG`, `LASTNAME_ENG`, `USER_TYPE_CODE`, `PREFIX`, `PASSWORD`, `CENTER_CODE`, `CREATED_TIME`, `SESSION`, `ENABLE`, `ALL_CENTER`, `LOGINTIME`, `TEXT_SIGNATURE`, `PACS_LOGIN`, `DICTAGE_PASSWORD`, `LANDING_PAGE`, `SIGNATURE_IMAGE`, `SIGNATURE_TEXT`, `google_secret_code`, `LANGUAGE`, `EMAIL`, `TEMP`, `LAST_ACTION_TIME`) VALUES
-(1, 'Default1', 'Default1', 'admin', 'Administrator', 'admin', 'TESTEnglishNAME', 'TESTEnglishLastname', 'ADMIN', 'BR', 'd54e5ae10222d681124b795096598b65', 'CENTRAL', '2009-08-26 19:10:45', '7ulsk4br5gda0pgnv629ovdr4r', '1', 0, '22:45:33', 'test test test test test&nbsp;', 'pacs1', 0, NULL, 0, 0, NULL, 'english', NULL, '', '2024-06-15 02:57:57'),
-(2, '1670944449', '', 'rad', 'Radiologist', 'Rad1', '', '', 'RADIOLOGIST', 'MD', 'a72e45c24510a6889800a3e6d9d698e8', 'CENTRAL', '2022-12-13 15:15:36', 'crnt56ar0eak0ccehbs0gj76ra', '1', 0, '17:32:27', NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, '', '2024-06-08 09:02:39'),
-(3, '1670944696', '', 'tech', 'tech', 'tech', '', '', 'TECHNICIAN', '', '0276edb105e7453866bbce5472d9a111', 'CENTRAL', '2022-12-13 15:18:40', NULL, '1', 0, NULL, NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, NULL, NULL);
+(1, 'Default1', 'Default1', 'admin', 'Administrator', 'admin', 'TESTEnglishNAME', 'TESTEnglishLastname', 'ADMIN', 'BR', '$argon2i$v=19$m=65536,t=4,p=1$UHFkRXZtYmw0WGFRQ0I0bA$Mvtlsg02XgzOFvrOpscEv2tfRBuTQQF9nkTIRBncrn4', 'CENTRAL', '2009-08-26 19:10:45', '7ulsk4br5gda0pgnv629ovdr4r', '1', 0, '22:45:33', 'test test test test test&nbsp;', 'pacs1', 0, NULL, 0, 0, NULL, 'english', NULL, '', '2024-06-15 02:57:57'),
+(2, '1670944449', '', 'rad', 'Radiologist', 'Rad1', '', '', 'RADIOLOGIST', 'MD', '$argon2i$v=19$m=65536,t=4,p=1$ZVZPai5veFJXZXhZZFh2bw$UjsYnsHqJIHfBrlywzmOZCkZTCR7m+loxvlwEnqorEs', 'CENTRAL', '2022-12-13 15:15:36', 'crnt56ar0eak0ccehbs0gj76ra', '1', 0, '17:32:27', NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, '', '2024-06-08 09:02:39'),
+(3, '1670944696', '', 'tech', 'tech', 'tech', '', '', 'TECHNICIAN', '', '$argon2i$v=19$m=65536,t=4,p=1$MUtUalNjNUI1eFgzRC5obQ$+AufI9eNHFRSXD5AB/mp7ZJIGcHve35rNuHlxIXLo9Q', 'CENTRAL', '2022-12-13 15:18:40', NULL, '1', 0, NULL, NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2914,18 +2914,25 @@ ALTER TABLE `xray_user_worklist_examroom`
 ALTER TABLE `xray_user_worklist_order`
   MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT;
 
+-- Update passwords using ARGON2I hashes (generated via PHP password_hash function)
+-- Note: ARGON2I hashes are generated in PHP, not MySQL, so we use pre-generated hashes here
 UPDATE xray_user
-SET PASSWORD = MD5('admin123'), ENABLE = '1'
+SET PASSWORD = '$argon2i$v=19$m=65536,t=4,p=1$UHFkRXZtYmw0WGFRQ0I0bA$Mvtlsg02XgzOFvrOpscEv2tfRBuTQQF9nkTIRBncrn4', ENABLE = '1'
 WHERE LOGIN = 'admin';
 
 UPDATE xray_user
-SET PASSWORD = MD5('rad123'), ENABLE = '1'
+SET PASSWORD = '$argon2i$v=19$m=65536,t=4,p=1$ZVZPai5veFJXZXhZZFh2bw$UjsYnsHqJIHfBrlywzmOZCkZTCR7m+loxvlwEnqorEs', ENABLE = '1'
 WHERE LOGIN = 'rad';
 
+-- Verification query (for testing - password_verify in PHP will handle verification)
+-- Note: Password verification must be done in PHP using password_verify(), not in SQL
 SELECT LOGIN,
        ENABLE,
-       PASSWORD = MD5('admin123') AS MATCH_ADMIN,
-       PASSWORD = MD5('rad123')   AS MATCH_RAD
+       CASE 
+           WHEN LOGIN = 'admin' THEN 'Use PHP password_verify() to check'
+           WHEN LOGIN = 'rad' THEN 'Use PHP password_verify() to check'
+           ELSE 'N/A'
+       END AS PASSWORD_VERIFICATION_NOTE
 FROM xray_user
 WHERE LOGIN IN ('admin','rad');
 
