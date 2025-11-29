@@ -24,8 +24,8 @@
 # This Copyright is in full effect in any country that has International     
 ##############################################################################
 $host ="localhost";
-$user ="yourusername";
-$password ="yourpassword";
+$user ="root";
+$password ="";
 $dbname ="ris";
 error_reporting(E_ERROR);
 $dbconnect = mysqli_connect($host,$user,$password,$dbname);

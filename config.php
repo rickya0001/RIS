@@ -40,5 +40,5 @@ $CREATE_REPORT_PDF =1; // Create PDF report after approve the report
 $REPORT_PATH = 'reportpdf'; // Path save pdf report 
 $LANGUAGE = "english";//  Language menu
 include "language/".$LANGUAGE.".php";
-date_default_timezone_set('Asia/Bangkok');
+date_default_timezone_set('America/Chicago');
 ?>
