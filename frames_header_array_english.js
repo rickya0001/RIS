@@ -77,6 +77,7 @@ effect,				// Filter - Text variable for setting transitional effects on menu ac
 ,"Exam Room","examroom.php target=main;sourceframe=main;",,,2 
 ,"Radiologist","show-menu=radiologist target=main;sourceframe=main;",,,2 
 ,"Search","search-all.php target=main;sourceframe=main;",,,2 
+,"Calendar","calendar.php target=main;sourceframe=main;",,,2 
 ,"Tools","show-menu=Tools target=main;sourceframe=main;",,"#",2
 ])
 
