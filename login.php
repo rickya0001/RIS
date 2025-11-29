@@ -28,44 +28,49 @@ $sessionID = session_id();
 $userlogin = $_POST['userlogin']; 
 $userlogin = trim($userlogin);
 $userpassword = $_POST['password'];
-$userpassword = md5($userpassword);
+// $userpassword = md5($userpassword);
 $_SESSION['ID'] = $sessionID;
 include ("connectdb.php");
-$sql = "select LOGIN, PASSWORD, USER_TYPE_CODE, ENABLE FROM xray_user WHERE LOGIN='$userlogin'and PASSWORD='$userpassword'";
-$result = mysqli_query($dbconnect, $sql); // 
-$row = mysqli_fetch_array($result,MYSQLI_ASSOC);
-$usertypecode = $row["USER_TYPE_CODE"];
-$ENABLE = $row["ENABLE"];
-	
-		if ($ENABLE == 0) 
-			{
-				header("Location: login.html");
-				exit;
-			}	
-		
-$numrows = @mysqli_num_rows($result);
-if($numrows == 1)
-	{ 
-		$updatelogin = ''; //Clear Session previous login
-		mysqli_query($dbconnect, "update xray_user SET SESSION ='' WHERE SESSION ='$sessionID'");
-		mysqli_query($dbconnect, "update xray_user SET SESSION ='$sessionID', LOGINTIME=NOW() WHERE LOGIN='$userlogin'");
+$stmt = $dbconnect->prepare("SELECT LOGIN, PASSWORD, USER_TYPE_CODE, ENABLE
+                             FROM xray_user
+                             WHERE LOGIN = ?");
+$stmt->bind_param("s", $userlogin); // "s" = string
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
 
-		$_SESSION['userlogin']= $userlogin; 
-		$IP=getenv('REMOTE_ADDR');
-		$URL=$_SERVER["HTTP_REFERER"];
-		mysqli_query($dbconnect, "insert into xray_log (USER,IP,EVENT,URL)VALUES ('$userlogin','$IP','LOGIN','$URL')");
-		if ($usertypecode == 'VIEWER')
-			{
-				header("Location: xrayreport\index.php");
-				exit;
-			}
-		header("Location: main.html");
+if ($row && password_verify($userpassword, $row['PASSWORD'])) {
+    // Password is correct, continue login
+    $usertypecode = $row["USER_TYPE_CODE"];
+    $ENABLE = $row["ENABLE"];
 
-		exit;
-	} 
-if ($numrows == 0) 
-	{ 
-		header("Location: login.html"); 
-		exit;
-	} 
+    if ($ENABLE == 0) {
+        header("Location: login.html");
+        exit;
+    }
+
+    $sessionID = session_id();
+    $_SESSION['userlogin'] = $userlogin;
+    $_SESSION['ID'] = $sessionID;
+
+    // Clear previous sessions
+    mysqli_query($dbconnect, "UPDATE xray_user SET SESSION ='' WHERE SESSION ='$sessionID'");
+    mysqli_query($dbconnect, "UPDATE xray_user SET SESSION ='$sessionID', LOGINTIME=NOW() WHERE LOGIN='$userlogin'");
+
+    $IP = getenv('REMOTE_ADDR');
+    $URL = $_SERVER["HTTP_REFERER"];
+    mysqli_query($dbconnect, "INSERT INTO xray_log (USER,IP,EVENT,URL) VALUES ('$userlogin','$IP','LOGIN','$URL')");
+
+    if ($usertypecode == 'VIEWER') {
+        header("Location: xrayreport/index.php");
+        exit;
+    }
+    header("Location: main.html");
+    exit;
+
+} else {
+    // Invalid login
+    header("Location: login.html");
+    exit;
+}
 ?>

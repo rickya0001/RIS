@@ -37,9 +37,9 @@ $ENABLE = $_POST['ENABLE'];
 $CENTER_CODE = $_POST['CENTER_CODE'];
 $PACS_LOGIN = $_POST['PACS_LOGIN'];
 $NEWPASS1 = trim($_POST['newpassword1']);
-$NEWPASS1 = md5($NEWPASS1);
+$NEWPASS1 = password_hash($NEWPASS1, PASSWORD_ARGON2I);
 $NEWPASS2 = trim($_POST['newpassword2']);
-$NEWPASS2 = md5($NEWPASS2);
+$NEWPASS2 = password_hash($NEWPASS2, PASSWORD_ARGON2I);
 if (!($NEWPASS1 == $NEWPASS2)){
 	echo "Please check New Password";
 	exit;

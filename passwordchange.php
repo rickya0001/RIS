@@ -24,39 +24,59 @@
 # This Copyright is in full effect in any country that has International     
 ##############################################################################
 include "session.php";
-echo "<html><head><title>Change Password</title>";
-?>
+echo "<html><head><title>Change Password</title></head><body bgcolor=\"#d4d4d4\">";
 
-    <script language=JavaScript src="frames_body_array_<?php  echo $LANGUAGE ?>.js" type=text/javascript></script>
-    <script language=JavaScript src="mmenu.js" type=text/javascript></script>   
-
-<?php
-echo "</head><body bgcolor=\"#d4d4d4\">";
-$OLDPASS = trim($_POST['oldpassword']);
-$OLDPASS = md5($OLDPASS);
+$OLDPASS  = trim($_POST['oldpassword']);
 $NEWPASS1 = trim($_POST['newpassword1']);
-$NEWPASS1 = md5($NEWPASS1);
 $NEWPASS2 = trim($_POST['newpassword2']);
-$NEWPASS2 = md5($NEWPASS2);
-$sql = "SELECT ID, LOGIN,PASSWORD FROM xray_user WHERE ID='$userid'";
-$result =mysqli_query($dbconnect, $sql);
-while($row=mysqli_fetch_array($result))
-	{
-		$PASSWORD1 = $row['PASSWORD'];
-	}
 
-if (!($OLDPASS == $PASSWORD1))
-	{
-		//echo $OLDPASS;
-		//echo "<br>";
-		echo "<font color=red><center>Wrong Old Password</center></font>";
-		exit;
-	}
-
-if (!($NEWPASS1 == $NEWPASS2)){
-	echo "Please check New Password";
-	exit;
+if ($NEWPASS1 !== $NEWPASS2) {
+    echo "<font color=red><center>New passwords do not match</center></font>";
+    exit;
 }
+
+// 1. Fetch the current hashed password safely
+$stmt = $dbconnect->prepare("SELECT PASSWORD FROM xray_user WHERE ID = ?");
+$stmt->bind_param("i", $userid);
+$stmt->execute();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
+
+if (!$row) {
+    echo "<font color=red><center>User not found</center></font>";
+    exit;
+}
+
+$currentHash = $row['PASSWORD'];
+
+// 2. Verify old password
+if (!password_verify($OLDPASS, $currentHash)) {
+    echo "<font color=red><center>Wrong Old Password</center></font>";
+    exit;
+}
+
+// 3. Hash new password
+$newHash = password_hash($NEWPASS1, PASSWORD_DEFAULT);
+
+// 4. Update database with secure hash
+$stmt = $dbconnect->prepare("UPDATE xray_user SET PASSWORD = ? WHERE ID = ?");
+$stmt->bind_param("si", $newHash, $userid);
+$stmt->execute();
+
+// 5. Log password change
+$URL = $_SERVER["HTTP_REFERER"];
+$IP  = $_SERVER["REMOTE_ADDR"];
+
+$log = $dbconnect->prepare(
+    "INSERT INTO xray_log (USER, IP, EVENT, URL) VALUES (?, ?, 'CHANGEPASSWORD', ?)"
+);
+$log->bind_param("sss", $userlogin, $IP, $URL);
+$log->execute();
+
+echo "<center>Password Changed<br>Please log out and log in again.</center>";
+echo "</body></html>";
+exit;
+
 
 $sql = "UPDATE xray_user SET PASSWORD = '$NEWPASS1' WHERE LOGIN = '$userlogin'";
 mysqli_query($dbconnect, $sql);

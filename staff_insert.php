@@ -34,7 +34,7 @@ $lastname = trim($_POST['lastname']);
 $name_eng = trim($_POST['name_eng']);
 $lastname_eng = trim($_POST['lastname_eng']);
 $password = trim($_POST['password']);
-$password = md5($password);
+$password = password_hash($password, PASSWORD_ARGON2I);
 ?>
 
 <script language=JavaScript src="frames_body_array_<?php  echo $LANGUAGE ?>.js" type=text/javascript></script>
@@ -75,7 +75,7 @@ if ($userexit != '')
 	
 	
 echo "<strong><a href=staff_new.php>Add New Start</a> </strong><br />";
-$sql1 = "insert INTO xray_user (CODE, DF_CODE, LOGIN, NAME,LASTNAME,NAME_ENG,LASTNAME_ENG, USER_TYPE_CODE, PASSWORD, CENTER_CODE) 
+$sql1 = "insert INTO xray_user (CODE, DF_CODE, LOGIN, NAME,LASTNAME,NAME_ENG,LASTNAME_ENG, USER_TYPE_CODE, PASSWORD, CENTER_CODE)
 			VALUES
 			('$code','$dfcode','$loginname','$name','$lastname','$name_eng','$lastname_eng','$user_type','$password','$center_code')";
 mysqli_query($dbconnect, $sql1);
