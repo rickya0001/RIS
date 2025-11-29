@@ -7,6 +7,9 @@
 -- เวอร์ชันของเซิร์ฟเวอร์: 10.6.17-MariaDB
 -- PHP Version: 5.6.40
 
+CREATE DATABASE IF NOT EXISTS ris;
+USE ris;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
@@ -2138,7 +2141,7 @@ CREATE TABLE `xray_user` (
 INSERT INTO `xray_user` (`ID`, `CODE`, `DF_CODE`, `LOGIN`, `NAME`, `LASTNAME`, `NAME_ENG`, `LASTNAME_ENG`, `USER_TYPE_CODE`, `PREFIX`, `PASSWORD`, `CENTER_CODE`, `CREATED_TIME`, `SESSION`, `ENABLE`, `ALL_CENTER`, `LOGINTIME`, `TEXT_SIGNATURE`, `PACS_LOGIN`, `DICTAGE_PASSWORD`, `LANDING_PAGE`, `SIGNATURE_IMAGE`, `SIGNATURE_TEXT`, `google_secret_code`, `LANGUAGE`, `EMAIL`, `TEMP`, `LAST_ACTION_TIME`) VALUES
 (1, 'Default1', 'Default1', 'admin', 'Administrator', 'admin', 'TESTEnglishNAME', 'TESTEnglishLastname', 'ADMIN', 'BR', 'd54e5ae10222d681124b795096598b65', 'CENTRAL', '2009-08-26 19:10:45', '7ulsk4br5gda0pgnv629ovdr4r', '1', 0, '22:45:33', 'test test test test test&nbsp;', 'pacs1', 0, NULL, 0, 0, NULL, 'english', NULL, '', '2024-06-15 02:57:57'),
 (2, '1670944449', '', 'rad', 'Radiologist', 'Rad1', '', '', 'RADIOLOGIST', 'MD', 'a72e45c24510a6889800a3e6d9d698e8', 'CENTRAL', '2022-12-13 15:15:36', 'crnt56ar0eak0ccehbs0gj76ra', '1', 0, '17:32:27', NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, '', '2024-06-08 09:02:39'),
-(3, '1670944696', '', 'tech', 'tech', 'tech', '', '', 'TECHNICIAN', '', '0276edb105e7453866bbce5472d9a111', 'CENTRAL', '2022-12-13 15:18:40', NULL, '1', 0, NULL, NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, NULL, NULL),
+(3, '1670944696', '', 'tech', 'tech', 'tech', '', '', 'TECHNICIAN', '', '0276edb105e7453866bbce5472d9a111', 'CENTRAL', '2022-12-13 15:18:40', NULL, '1', 0, NULL, NULL, '', 0, NULL, 0, 0, NULL, 'english', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -2184,7 +2187,7 @@ CREATE TABLE `xray_user_right` (
 INSERT INTO `xray_user_right` (`USER_ID`, `SUPER_ADMIN`, `ADMIN`, `ADMIN_CENTER`, `DELETE_ORDER`, `CHANGE_STATUS`, `EDIT_PATIENT`, `UPLOAD`, `DEL_UPLOAD`, `UPDATE_CODE`, `CREATE_ORDER`, `RESET_USER_PASSWORD`, `SEE_ALL_WORKLIST`, `ASSIGN_RAD`) VALUES
 (1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 (2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-(3, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1),
+(3, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 1);
 
 
 -- --------------------------------------------------------
@@ -2245,7 +2248,7 @@ CREATE TABLE `xray_user_worklist_dictate` (
   `STATUS_RP2` varchar(20) DEFAULT NULL,
   `STATUS_RP3` varchar(20) DEFAULT NULL,
   `STATUS_RP4` varchar(20) DEFAULT NULL,
-  `DATE_LOG` date NOT NULL DEFAULT current_timestamp()
+  `DATE_LOG` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 --
@@ -2294,7 +2297,7 @@ CREATE TABLE `xray_user_worklist_examroom` (
   `STATUS_QC` varchar(20) DEFAULT NULL,
   `ARRIVAL1` varchar(20) DEFAULT NULL,
   `ARRIVAL2` varchar(20) DEFAULT NULL,
-  `DATE_LOG` date NOT NULL DEFAULT current_timestamp()
+  `DATE_LOG` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 --
@@ -2333,7 +2336,7 @@ CREATE TABLE `xray_user_worklist_order` (
   `MOD_OPTION7` varchar(20) DEFAULT NULL,
   `MOD_OPTION8` varchar(20) DEFAULT NULL,
   `MOD_OPTION9` varchar(20) DEFAULT NULL,
-  `DATE_LOG` date NOT NULL DEFAULT current_timestamp()
+  `DATE_LOG` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2911,6 +2914,21 @@ ALTER TABLE `xray_user_worklist_examroom`
 ALTER TABLE `xray_user_worklist_order`
   MODIFY `ID` int(10) NOT NULL AUTO_INCREMENT;
 
+UPDATE xray_user
+SET PASSWORD = MD5('admin123'), ENABLE = '1'
+WHERE LOGIN = 'admin';
+
+UPDATE xray_user
+SET PASSWORD = MD5('rad123'), ENABLE = '1'
+WHERE LOGIN = 'rad';
+
+SELECT LOGIN,
+       ENABLE,
+       PASSWORD = MD5('admin123') AS MATCH_ADMIN,
+       PASSWORD = MD5('rad123')   AS MATCH_RAD
+FROM xray_user
+WHERE LOGIN IN ('admin','rad');
+
 --
 -- Constraints for dumped tables
 --
@@ -2918,10 +2936,10 @@ ALTER TABLE `xray_user_worklist_order`
 --
 -- Constraints for table `xray_sc_events`
 --
-ALTER TABLE `xray_sc_events`
-  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`calendar_id`) REFERENCES `calendar` (`calendar_id`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+# ALTER TABLE `xray_sc_events`
+#   ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`calendar_id`) REFERENCES `calendar` (`calendar_id`);
+# COMMIT;
+#
+# /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+# /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+# /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
